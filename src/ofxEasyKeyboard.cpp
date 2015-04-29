@@ -6,7 +6,7 @@
 //
 //
 
-#include "keyboard.h"
+#include "ofxEasyKeyboard.h"
 
 keyboard::keyboard()
 {
