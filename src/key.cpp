@@ -21,9 +21,11 @@ key::~key()
         ofUnregisterMouseEvents(this); // disable litening to mous events.
         bRegisteredEvents = false;
     }
+    delete selectFbo;
+    delete deselectFbo;
 }
 
-void key::setup(float x, float y, float w, float h,string v,string v2,ofTrueTypeFont *f)
+void key::setup(float x, float y, float w, float h,string v,string v2,ofTrueTypeFont *f,ofFbo * select, ofFbo * deselect)
 {
     start = ofVec2f(x,y);
     end = ofVec2f(w,h);
@@ -40,7 +42,10 @@ void key::setup(float x, float y, float w, float h,string v,string v2,ofTrueType
         ofRegisterMouseEvents(this); // this will enable our circle class to listen to the mouse events.
         bRegisteredEvents = true;
     }
-
+    selectFbo = new ofFbo();
+    selectFbo = select;
+    deselectFbo = new ofFbo();
+    deselectFbo = deselect;
 }
 
 void key::draw()
@@ -48,12 +53,14 @@ void key::draw()
     ofSetColor(255, 255, 255);
     ofPushMatrix();
     ofTranslate(start.x,start.y);
-    if (bActive) ofSetColor(255, 0, 0);
+    if (bActive) selectFbo->draw(0,0);
+    else deselectFbo->draw(0,0);
+/*    if (bActive) ofSetColor(255, 0, 0);
     else ofSetColor(255,255,255);
     //ofRect(0,0,end.x,end.y);
     ofNoFill();
     ofSetLineWidth(2);
-    ofRectRounded(0,0,end.x,end.y, 5);
+    ofRectRounded(0,0,end.x,end.y, 5);*/
     ofSetColor(0,0,0);
     if (shift) keyObj->drawString(primValue,kPos.x,kPos.y);
     else keyObj->drawString(secValue,kPos.x,kPos.y);

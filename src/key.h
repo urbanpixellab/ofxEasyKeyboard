@@ -17,7 +17,7 @@ class key
 public:
     key();
     ~key();
-    void setup(float x, float y, float w, float h,string v,string v2,ofTrueTypeFont *f);
+    void setup(float x, float y, float w, float h,string v,string v2,ofTrueTypeFont *f,ofFbo * select, ofFbo * deselect);
     void draw();
 
     ofEvent<string> keyRel;
@@ -48,6 +48,9 @@ private:
     ofRectangle kBox;
     ofVec2f kPos;
     ofRectangle area;
+    
+    ofFbo * selectFbo;
+    ofFbo * deselectFbo;
     
     bool shift;
 };

@@ -6,7 +6,7 @@
 //
 //
 
-#include "ofxEasyKeyboard.h"
+#include "keyboard.h"
 
 keyboard::keyboard()
 {
@@ -18,8 +18,9 @@ keyboard::~keyboard()
 
 
 
-void keyboard::init(float px,float py,float wx, float wy)
+void keyboard::init(float px,float py,float wx, float wy,float spacerX, float spacerY)
 {
+    createFbos(wx, wy);
     defaultValue = "enter your email adress";
     ausF.loadFont("verdana.ttf", 18);
     keyF.loadFont("verdana.ttf", 14);
@@ -36,13 +37,10 @@ void keyboard::init(float px,float py,float wx, float wy)
     secValues.push_back("qwertyuiop");
     secValues.push_back("asdfghjkl@");
     secValues.push_back("zxcvbnm._-");
-    float xSpace = 10;
-    float ySace = 5;
+    float xSpace = spacerX;
+    float ySpace = spacerY;
     
     int yCount = primValues.size();
-    float maxX = primValues[0].size();
-    float offX = (wx / maxX);
-    float offY = offX;
     k.clear();
     //eof konst
     for(int i = 0;i < yCount;i++)
@@ -51,39 +49,34 @@ void keyboard::init(float px,float py,float wx, float wy)
         for (int j = 0; j < xCount; j++)
         {
             key *sK = new key();
-            float x = px + (offX * j * 1.08);
-            float y = py + (offY * i * 1.08);
-            float w = offX;
-            float h = offY;
+            float x = px + ((wx + xSpace) * j);
+            float y = py + ((wy + ySpace) * i);
             string v = ofToString(primValues[i][j]);
             string v2 = ofToString(secValues[i][j]);
-            sK->setup(x,y,w,h,v,v2,&keyF);
+            sK->setup(x,y,wx,wy,v,v2,&keyF,&selectButton,&deselectButton);
             //string s,ofRectangle a, ofTrueTypeFont *f,ofColor c
             ofAddListener(sK->keyRel, this, &keyboard::getKey);
             k.push_back(sK);
         }
-        if (i == 0) // noch einmal das sonderzeichen
-        {
-            key *sK = new key();
-            float x = px + (offX * primValues[0].size() * 1.08);
-            float y = py + (offY * i * 1.08);
-            float w = offX;
-            float h = offY;
-            string v = "DEL";
-            string v2 = "DEL";
-            sK->setup(x,y,w,h,v,v2,&keyF);
-            ofAddListener(sK->keyRel, this, &keyboard::getKey);
-            k.push_back(sK);
-        }
     }
+    //special key
+    key *sK = new key();
+    float x = px + ((wx + xSpace) * primValues[0].size());
+    float y = py + ((wy + ySpace) * 0 * 1.08);
+    float w = wx;
+    float h = wy;
+    string v = "DEL";
+    string v2 = "DEL";
+    sK->setup(x,y,w,h,v,v2,&keyF,&selectButton,&deselectButton);
+    ofAddListener(sK->keyRel, this, &keyboard::getKey);
+    k.push_back(sK);
+
     ausgabe = "";
     //noch die special keys
     //del
     cursor = false;
     counter = 0;
     maxCount = 120;
-    
-    
 }
 
 void keyboard::draw()
@@ -136,6 +129,38 @@ void keyboard::deactivate()
         k[i]->disable();
     }
 }
+
+void keyboard::createFbos(float w,float h)
+{
+    //active
+    selectButton.allocate(w, h,GL_RGBA);
+    selectButton.begin();
+    ofClear(0, 0, 0);
+    ofSetColor(200, 200, 200);
+    ofFill();
+    ofRectRounded(0,0,w,h, 5);
+    ofSetColor(255, 0, 0);
+    ofNoFill();
+    ofSetLineWidth(2);
+    ofRectRounded(0,0,w,h, 5);
+    ofSetLineWidth(1);
+    selectButton.end();
+    //inactive
+    deselectButton.allocate(w, h,GL_RGBA);
+    deselectButton.begin();
+    ofClear(0, 0, 0);
+    ofSetColor(255, 255, 255);
+    ofFill();
+    ofRectRounded(0,0,w,h, 5);
+    ofSetColor(0, 0, 0);
+    ofNoFill();
+    ofSetLineWidth(2);
+    ofRectRounded(0,0,w,h, 5);
+    ofSetLineWidth(1);
+    deselectButton.end();
+
+}
+
 
 string keyboard::getOutput()
 {

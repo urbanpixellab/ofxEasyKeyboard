@@ -20,7 +20,7 @@ public:
     keyboard();
     ~keyboard();
     
-    void init(float px,float py,float wx, float wy);
+    void init(float px,float py,float width, float height, float spaceX, float spaceY);
     void draw();
     void getKey(string &e);
     
@@ -32,6 +32,8 @@ public:
     
     string getOutput();
     bool verifyString(string &s);
+    
+    void createFbos(float width,float height);
 
 private:
     ofVec2f position;
@@ -46,6 +48,8 @@ private:
     unsigned int counter;
     unsigned int maxCount;
     bool cursor;
+    ofFbo selectButton;
+    ofFbo deselectButton;
 };
 
 #endif /* defined(__easyMailKeyboard__keyboard__) */
